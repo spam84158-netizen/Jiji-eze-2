@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>jiji</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --green: #009739;
+            --green-light: #00b847;
+            --white: #ffffff;
+            --red: #EF4135;
+            --red-dark: #c82333;
+            --bg-dark: #0f1a0f;
+            --bg-card: rgba(20, 35, 20, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #b8c5b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(0, 151, 57, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 50%, rgba(239, 65, 53, 0.2) 0%, transparent 50%);
+            filter: blur(60px);
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+            50% { transform: scale(1.1) rotate(3deg); opacity: 0.9; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            animation: pageEnter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes pageEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* PAGE 1 - LANDING */
+        #landingPage {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #landingPage.active {
+            display: flex;
+        }
+
+        .landing-content {
+            text-align: center;
+            max-width: 900px;
+            z-index: 10;
+        }
+
+        .typing-container {
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .typing-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(20px, 5vw, 32px);
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1.3;
+            display: inline-block;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 28px;
+            background: var(--green-light);
+            margin-left: 5px;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .trust-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 151, 57, 0.2);
+            border: 2px solid var(--green);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--green-light);
+            margin: 20px 0;
+            animation: slideUp 0.8s ease-out 2s both;
+        }
+
+        .trust-badge i {
+            font-size: 18px;
+            animation: checkmark 0.6s ease-out 2.5s both;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0) rotate(-45deg); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .landing-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 20px auto;
+            max-width: 600px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 3s both;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .security-notice {
+            background: rgba(239, 65, 53, 0.15);
+            border: 2px solid var(--red);
+            border-radius: 16px;
+            padding: 15px 20px;
+            margin: 20px auto;
+            max-width: 650px;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 3.3s both;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .security-notice i.main-icon {
+            color: var(--red);
+            font-size: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .security-notice-content h4 {
+            color: var(--red);
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .security-notice-content p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .features {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 3.5s both;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+        }
+
+        .feature-item i {
+            color: var(--green-light);
+        }
+
+        .btn-start {
+            margin-top: 25px;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green), var(--green-light));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4);
+            transition: all 0.3s;
+            opacity: 0;
+            animation: fadeIn 1s ease-out 4s both, pulse 2s ease-in-out 4s infinite;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6); }
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6);
+        }
+
+        .btn-start i {
+            font-size: 20px;
+            animation: arrowBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowBounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(8px); }
+        }
+
+        /* PAGE 2 - INFO PAIEMENT BLOQUÉ */
+        #infoPage {
+            min-height: 100vh;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 15px 30px 15px;
+        }
+
+        #infoPage.active {
+            display: flex;
+        }
+
+        .info-content {
+            max-width: 700px;
+            text-align: center;
+        }
+
+        .info-icon-large {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: white;
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 65, 53, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 65, 53, 0); }
+        }
+
+        .info-content h1 {
+            font-size: clamp(24px, 6vw, 36px);
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .info-content h1 .highlight-green { color: var(--green-light); }
+        .info-content h1 .highlight-red { color: var(--red); }
+
+        .info-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .info-cards {
+            display: grid;
+            gap: 15px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .info-card {
+            padding: 18px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .info-card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .info-card-icon.green { background: var(--green); }
+        .info-card-icon.red { background: var(--red); }
+
+        .info-card-text h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .info-card-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .btn-order {
+            margin-top: 20px;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green), var(--green-light));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4);
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .btn-order:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6);
+        }
+
+        /* PAGE 3 - COMMANDE */
+        #orderPage {
+            padding: 80px 15px 30px 15px;
+            min-height: 100vh;
+        }
+
+        .order-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .order-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .order-header h1 {
+            font-size: 26px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .order-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .order-card {
+            padding: 25px 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--green);
+            box-shadow: 0 0 0 4px rgba(0, 151, 57, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .seller-badge {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            animation: badgeAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .seller-badge.visible {
+            display: flex;
+        }
+
+        @keyframes badgeAppear {
+            0% { transform: translateY(-50%) scale(0); }
+            50% { transform: translateY(-50%) scale(1.3); }
+            100% { transform: translateY(-50%) scale(1); }
+        }
+
+        .badge-status-text {
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        .badge-status-text.visible {
+            display: flex;
+        }
+
+        .badge-status-text.verified {
+            color: var(--green-light);
+        }
+
+        .price-display {
+            font-size: 36px;
+            font-weight: 900;
+            text-align: center;
+            color: var(--green-light);
+            margin: 15px 0;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 14px;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-wave {
+            background: linear-gradient(135deg, var(--green), var(--green-light));
+            color: white;
+            width: 100%;
+            justify-content: center;
+            padding: 16px;
+            font-size: 16px;
+            box-shadow: 0 10px 30px rgba(0, 151, 57, 0.3);
+        }
+
+        .btn-wave:hover {
+            box-shadow: 0 15px 40px rgba(0, 151, 57, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .btn-cancel {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--white);
+            border: 1px solid var(--red);
+            width: 100%;
+            justify-content: center;
+            margin-top: 12px;
+        }
+
+        .btn-cancel:hover {
+            background: var(--red);
+            color: var(--white);
+        }
+
+        .btn-contact {
+            background: var(--white);
+            color: var(--green);
+            width: 100%;
+            justify-content: center;
+            margin-top: 12px;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-contact:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.25);
+        }
+
+        .security-notice-small {
+            background: rgba(239, 65, 53, 0.1);
+            border: 1px solid rgba(239, 65, 53, 0.3);
+            border-radius: 12px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .security-notice-small i {
+            color: var(--red);
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .security-notice-small p {
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 12px 15px;
+            background: rgba(15, 26, 15, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: none;
+        }
+
+        .nav-container.visible {
+            display: block;
+        }
+
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .logo .l-green { color: var(--green-light); }
+        .logo .l-white { color: var(--white); }
+        .logo .l-red { color: var(--red); }
+
+        .nav-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--green);
+            background: rgba(0, 151, 57, 0.1);
+        }
+
+        /* Assistance */
+        .assist-btn {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 10px 30px rgba(239, 65, 53, 0.4);
+            transition: all 0.3s;
+            z-index: 999;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .assist-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(239, 65, 53, 0.5);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-dark);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 32px;
+        }
+
+        .modal h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+
+        .modal p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .modal-phone {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--red);
+            margin-bottom: 20px;
+            display: block;
+            text-decoration: none;
+        }
+
+        .modal-close {
+            padding: 12px 28px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .modal-close:hover {
+            background: var(--green-light);
+        }
+
+        @media (max-width: 768px) {
+            .security-notice, .info-card {
+                flex-direction: column;
+                text-align: center;
+                align-items: center;
+            }
+            .order-card {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <!-- PAGE 1 - LANDING -->
+    <div id="landingPage" class="page active">
+        <div class="landing-content">
+            <div class="typing-container">
+                <div class="typing-text">
+                    <span id="typedText"></span><span class="cursor"></span>
+                </div>
+            </div>
+
+            <div class="trust-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Vendeur Officiel 100% Vérifié</span>
+            </div>
+
+            <p class="landing-description">
+                Tous nos vendeurs sont rigoureusement sélectionnés et certifiés. 
+                Vous pouvez leur faire confiance en toute sécurité pour passer vos commandes.
+            </p>
+
+            <div class="security-notice">
+                <i class="fas fa-exclamation-triangle main-icon"></i>
+                <div class="security-notice-content">
+                    <h4><i class="fas fa-lock"></i> Paiement sécurisé</h4>
+                    <p>
+                        Le paiement est <strong>bloqué par notre entreprise jiji</strong> et peut être annulé à tout moment. 
+                        L'argent n'est remis <strong>que si un livreur est envoyé</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Paiement Sécurisé</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Livraison Rapide</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Support 24/7</span>
+                </div>
+            </div>
+
+            <button class="btn-start" onclick="showPage('infoPage')">
+                <span>Commencer</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 2 - INFO PAIEMENT BLOQUÉ -->
+    <div id="infoPage" class="page">
+        <div class="info-content">
+            <div class="info-icon-large">
+                <i class="fas fa-lock"></i>
+            </div>
+
+            <h1>
+                Votre paiement est <span class="highlight-red">bloqué</span><br>
+                par <span class="highlight-green">notre entreprise</span>
+            </h1>
+
+            <p class="info-description">
+                Pour votre sécurité, chaque paiement est automatiquement bloqué par notre entreprise jiji. 
+                L'argent n'est jamais directement envoyé au vendeur.
+            </p>
+
+            <div class="info-cards">
+                <div class="info-card glass-card">
+                    <div class="info-card-icon red">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="info-card-text">
+                        <h3>Paiement bloqué</h3>
+                        <p>Le paiement est <strong>bloqué par jiji</strong> et peut être annulé à <strong>n'importe quel moment</strong> en cas de problème.</p>
+                    </div>
+                </div>
+
+                <div class="info-card glass-card">
+                    <div class="info-card-icon green">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <div class="info-card-text">
+                        <h3>Argent remis après livraison</h3>
+                        <p>L'argent est remis <strong>seulement si un livreur est envoyé</strong> pour la livraison de votre commande.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-order" onclick="showPage('orderPage')">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Passer la commande</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- PAGE 3 - COMMANDE -->
+    <div id="orderPage" class="page">
+        <div class="order-container">
+            <div class="order-header">
+                <h1>Passer une commande</h1>
+                <p>Entrez les informations de votre commande</p>
+            </div>
+
+            <div class="order-card glass-card">
+                <div class="security-notice-small">
+                    <i class="fas fa-lock"></i>
+                    <p>
+                        Le paiement est <strong>bloqué par l'entreprise</strong>. L'argent est remis <strong>seulement si un livreur est envoyé</strong>.
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Nom du vendeur</label>
+                    <div class="form-input-wrapper">
+                        <input type="text" class="form-input" id="sellerName" placeholder="Tapez le nom du vendeur..." oninput="checkSellerBadge()">
+                        <div class="seller-badge" id="sellerBadge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="badge-status-text" id="badgeStatusText">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="badgeStatusMessage"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Prix (FCFA)</label>
+                    <input type="number" class="form-input" id="itemPrice" placeholder="Ex: 50000" oninput="updatePriceDisplay()">
+                </div>
+
+                <div class="price-display" id="priceDisplay">0 FCFA</div>
+
+                <button class="btn btn-wave" onclick="payWithWave()">
+                    <i class="fas fa-wallet"></i>
+                    Payer avec Wave
+                </button>
+
+                <a href="https://wa.me/2250160775890" class="btn btn-cancel" target="_blank">
+                    <i class="fab fa-whatsapp"></i>
+                    Annuler la commande
+                </a>
+
+                <a href="https://wa.me/2250160775890" class="btn btn-contact" target="_blank">
+                    <i class="fas fa-headset"></i>
+                    Contactez-nous
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-container" id="navContainer">
+        <div class="nav-content">
+            <div class="logo">
+                <span class="l-green">J</span>
+                <span class="l-white">I</span>
+                <span class="l-red">J</span>
+                <span class="l-white">I</span>
+            </div>
+            <div class="nav-actions">
+                <button class="icon-btn" onclick="showAssistance()" title="Assistance">
+                    <i class="fas fa-headset"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ASSISTANCE MODAL -->
+    <div id="assistModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h2>Besoin d'aide ?</h2>
+            <p>Notre équipe est disponible 24/7 pour vous assister</p>
+            <a href="tel:+2250160775890" class="modal-phone">+225 01 60 77 58 90</a>
+            <button class="modal-close" onclick="closeAssistModal()">Fermer</button>
+        </div>
+    </div>
+
+    <!-- FLOATING ASSISTANCE BUTTON -->
+    <button class="assist-btn" onclick="showAssistance()" title="Assistance" style="display: none;" id="assistBtn">
+        <i class="fas fa-phone-alt"></i>
+    </button>
+
+    <script>
+        // Typing Effect
+        const textToType = "Bienvenue sur Jiji côte d'ivoire 🇨🇮";
+        const typedTextElement = document.getElementById('typedText');
+        let charIndex = 0;
+
+        function typeText() {
+            if (charIndex < textToType.length) {
+                typedTextElement.textContent += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeText, 100);
+            } else {
+                setTimeout(() => {
+                    typedTextElement.textContent = '';
+                    charIndex = 0;
+                    typeText();
+                }, 3000);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(typeText, 500);
+        });
+
+        // Wave link
+        const WAVE_LINK = "https://pay.wave.com/m/M_ci_QkksyFUDBqsl/c/ci/";
+
+        // Liste des vendeurs officiels vérifiés (uniquement "jiji")
+        const OFFICIAL_SELLERS = ["jiji"];
+
+        // Check seller badge
+        function checkSellerBadge() {
+            const name = document.getElementById('sellerName').value.trim();
+            const badge = document.getElementById('sellerBadge');
+            const statusText = document.getElementById('badgeStatusText');
+            const statusMessage = document.getElementById('badgeStatusMessage');
+
+            if (name.length === 0) {
+                badge.classList.remove('visible');
+                statusText.classList.remove('visible');
+                return;
+            }
+
+            // Normaliser le nom (minuscules et supprimer les espaces multiples)
+            const normalizedName = name.toLowerCase().replace(/\s+/g, ' ').trim();
+            
+            if (normalizedName === "jiji") {
+                // Vendeur officiel - afficher le badge bleu
+                badge.classList.add('visible');
+                statusText.classList.add('visible');
+                statusText.classList.remove('unverified');
+                statusText.classList.add('verified');
+                statusMessage.textContent = '✓ Vendeur officiel jiji vérifié';
+            } else {
+                // Pour tout autre nom : aucun signalement, rien n'apparaît (comportement normal)
+                badge.classList.remove('visible');
+                statusText.classList.remove('visible');
+            }
+        }
+
+        // Update price display
+        function updatePriceDisplay() {
+            const price = document.getElementById('itemPrice').value;
+            const display = document.getElementById('priceDisplay');
+            display.textContent = price ? `${parseInt(price).toLocaleString()} FCFA` : '0 FCFA';
+        }
+
+        // Pay with Wave
+        function payWithWave() {
+            const sellerName = document.getElementById('sellerName').value.trim();
+            const price = document.getElementById('itemPrice').value.trim();
+
+            if (!sellerName) {
+                alert('Veuillez entrer le nom du vendeur');
+                return;
+            }
+
+            if (!price) {
+                alert('Veuillez entrer le prix');
+                return;
+            }
+
+            const waveUrl = `${WAVE_LINK}?amount=${price}`;
+            window.open(waveUrl, '_blank');
+        }
+
+        // Show page
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+
+            if (pageName === 'landingPage') {
+                document.getElementById('navContainer').classList.remove('visible');
+                document.getElementById('assistBtn').style.display = 'none';
+            } else {
+                document.getElementById('navContainer').classList.add('visible');
+                document.getElementById('assistBtn').style.display = 'flex';
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        // Assistance
+        function showAssistance() {
+            document.getElementById('assistModal').classList.add('active');
+        }
+
+        function closeAssistModal() {
+            document.getElementById('assistModal').classList.remove('active');
+        }
+
+        function closeModal(event) {
+            if (event.target === event.currentTarget) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
