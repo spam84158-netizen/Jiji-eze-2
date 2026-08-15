@@ -3,1118 +3,428 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>jiji</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>jiji.ci.com</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
         :root {
-            --green: #009739;
-            --green-light: #00b847;
+            --jiji-green: #00a650;
+            --jiji-green-dark: #008a42;
+            --jiji-green-light: #e6f7ee;
             --white: #ffffff;
-            --red: #EF4135;
-            --red-dark: #c82333;
-            --bg-dark: #0f1a0f;
-            --bg-card: rgba(20, 35, 20, 0.7);
-            --text-primary: #ffffff;
-            --text-secondary: #b8c5b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --bg: #f5f7f5;
+            --text: #1a1a1a;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
+        /* SPLASH */
+        #splash {
+            position: fixed; inset: 0; background: var(--jiji-green); z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s, transform 0.6s;
         }
-
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background: 
-                radial-gradient(circle at 15% 50%, rgba(0, 151, 57, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 85% 50%, rgba(239, 65, 53, 0.2) 0%, transparent 50%);
-            filter: blur(60px);
-            animation: bgPulse 15s ease-in-out infinite;
+        #splash.hide { opacity: 0; transform: scale(1.1); pointer-events: none; }
+        .splash-logo {
+            font-size: 80px; font-weight: 900; color: white; letter-spacing: -4px;
+            animation: logoPop 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .splash-logo span:nth-child(2), .splash-logo span:nth-child(4) { color: #c8f7d8; }
+        .splash-tagline { color: rgba(255,255,255,0.9); margin-top: 12px; font-size: 16px; font-weight: 500; animation: fadeUp 1s ease 0.5s both; }
+        .splash-loader { margin-top: 40px; width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes logoPop { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        @keyframes bgPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
-            50% { transform: scale(1.1) rotate(3deg); opacity: 0.9; }
+        /* PAGES */
+        .page { display: none; min-height: 100vh; animation: pageFade 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes pageFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* LANDING */
+        .landing {
+            min-height: 100vh; background: linear-gradient(180deg, var(--jiji-green) 0%, var(--jiji-green-dark) 100%);
+            color: white; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+            position: relative; overflow: hidden;
         }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .landing::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: float 15s ease-in-out infinite;
         }
+        @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(30px, 30px); } }
 
-        .glass-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.06);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        .landing-content { position: relative; z-index: 2; max-width: 600px; }
+        .landing-logo { font-size: 60px; font-weight: 900; letter-spacing: -3px; margin-bottom: 16px; }
+        .landing-logo span:nth-child(2), .landing-logo span:nth-child(4) { color: #c8f7d8; }
+        .landing h1 { font-size: 28px; font-weight: 800; margin-bottom: 12px; line-height: 1.2; }
+        .landing p { font-size: 16px; opacity: 0.95; margin-bottom: 32px; line-height: 1.6; }
+
+        .landing-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+        .landing-feat { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 16px 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); }
+        .landing-feat i { font-size: 24px; margin-bottom: 6px; display: block; }
+        .landing-feat span { font-size: 12px; font-weight: 600; }
+
+        .btn-landing {
+            background: white; color: var(--jiji-green); padding: 18px 40px; border-radius: 50px; border: none;
+            font-size: 17px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.3s;
         }
+        .btn-landing:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+        .btn-landing i { animation: bounce 1.5s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 
-        .page {
-            display: none;
-            min-height: 100vh;
-            animation: pageEnter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        /* HEADER */
+        .header {
+            background: var(--white); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--border);
         }
+        .brand { font-size: 26px; font-weight: 900; color: var(--jiji-green); letter-spacing: -1px; }
+        .brand span:nth-child(2), .brand span:nth-child(4) { color: var(--jiji-green-dark); }
+        .secure-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--jiji-green); background: var(--jiji-green-light); padding: 6px 12px; border-radius: 20px; }
 
-        .page.active {
-            display: block;
+        /* CONTAINER */
+        .container { max-width: 1000px; margin: 0 auto; padding: 32px 20px; display: grid; grid-template-columns: 1fr; gap: 24px; }
+        @media (min-width: 800px) { .container { grid-template-columns: 1.3fr 0.7fr; } }
+
+        .card { background: var(--white); border-radius: 16px; padding: 28px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid var(--border); }
+        .card-title { font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+        .card-title i { color: var(--white); background: var(--jiji-green); padding: 8px; border-radius: 8px; }
+
+        /* FORM */
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+        @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } .full { grid-column: span 2; } }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+        .input-wrap { position: relative; }
+        .input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-light); }
+        .form-input {
+            width: 100%; padding: 14px 14px 14px 44px; border: 2px solid var(--border); border-radius: 10px;
+            font-size: 15px; transition: all 0.2s; background: var(--bg);
         }
+        .form-input:focus { outline: none; border-color: var(--jiji-green); background: white; box-shadow: 0 0 0 4px rgba(0,166,80,0.1); }
 
-        @keyframes pageEnter {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* SUMMARY */
+        .summary-row { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px dashed var(--border); font-size: 15px; }
+        .summary-row.total { border-bottom: none; border-top: 2px solid var(--text); margin-top: 10px; padding-top: 16px; font-size: 20px; font-weight: 800; color: var(--jiji-green); }
+        .summary-label { color: var(--text-light); font-weight: 500; }
+        .summary-value { font-weight: 700; text-align: right; }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%; padding: 16px; border-radius: 10px; border: none; font-size: 16px; font-weight: 700;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s; margin-top: 24px;
         }
+        .btn-primary { background: var(--jiji-green); color: white; box-shadow: 0 4px 14px rgba(0,166,80,0.3); }
+        .btn-primary:hover { background: var(--jiji-green-dark); transform: translateY(-2px); }
+        .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary { background: var(--white); color: var(--text); border: 2px solid var(--border); }
+        .btn-secondary:hover { background: var(--bg); }
 
-        /* PAGE 1 - LANDING */
-        #landingPage {
-            min-height: 100vh;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 15px;
-            position: relative;
-            overflow: hidden;
-        }
+        .trust-badge { display: flex; align-items: center; gap: 8px; background: var(--jiji-green-light); color: var(--jiji-green-dark); padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 600; margin-top: 20px; }
 
-        #landingPage.active {
-            display: flex;
-        }
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 20px; padding: 32px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .landing-content {
-            text-align: center;
-            max-width: 900px;
-            z-index: 10;
-        }
+        .pay-option { display: flex; align-items: center; padding: 16px; border: 2px solid var(--border); border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; }
+        .pay-option:hover { border-color: var(--jiji-green); background: var(--jiji-green-light); }
+        .pay-option.selected { border-color: var(--jiji-green); background: var(--jiji-green-light); }
+        .pay-option input { margin-right: 14px; width: 20px; height: 20px; accent-color: var(--jiji-green); }
+        
+        .wave-box { background: var(--jiji-green-light); border: 1px solid #a7e3c0; border-radius: 12px; padding: 20px; margin: 20px 0; font-size: 14px; color: var(--jiji-green-dark); line-height: 1.6; text-align: center; }
+        .wave-box a { color: var(--jiji-green-dark); font-weight: 800; word-break: break-all; text-decoration: underline; }
 
-        .typing-container {
-            margin-bottom: 20px;
-            min-height: 80px;
-        }
-
-        .typing-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: clamp(20px, 5vw, 32px);
-            font-weight: 700;
-            color: var(--white);
-            line-height: 1.3;
-            display: inline-block;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 3px;
-            height: 28px;
-            background: var(--green-light);
-            margin-left: 5px;
-            animation: blink 1s infinite;
-            vertical-align: middle;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        .trust-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 151, 57, 0.2);
-            border: 2px solid var(--green);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--green-light);
-            margin: 20px 0;
-            animation: slideUp 0.8s ease-out 2s both;
-        }
-
-        .trust-badge i {
-            font-size: 18px;
-            animation: checkmark 0.6s ease-out 2.5s both;
-        }
-
-        @keyframes checkmark {
-            0% { transform: scale(0) rotate(-45deg); }
-            50% { transform: scale(1.3) rotate(10deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .landing-description {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin: 20px auto;
-            max-width: 600px;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 3s both;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        .security-notice {
-            background: rgba(239, 65, 53, 0.15);
-            border: 2px solid var(--red);
-            border-radius: 16px;
-            padding: 15px 20px;
-            margin: 20px auto;
-            max-width: 650px;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 3.3s both;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            text-align: left;
-        }
-
-        .security-notice i.main-icon {
-            color: var(--red);
-            font-size: 20px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .security-notice-content h4 {
-            color: var(--red);
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .security-notice-content p {
-            color: var(--text-secondary);
-            font-size: 13px;
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .features {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin: 25px 0;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 3.5s both;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid var(--glass-border);
-        }
-
-        .feature-item i {
-            color: var(--green-light);
-        }
-
-        .btn-start {
-            margin-top: 25px;
-            padding: 16px 40px;
-            font-size: 18px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--green), var(--green-light));
-            color: white;
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4);
-            transition: all 0.3s;
-            opacity: 0;
-            animation: fadeIn 1s ease-out 4s both, pulse 2s ease-in-out 4s infinite;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6); }
-        }
-
-        .btn-start:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6);
-        }
-
-        .btn-start i {
-            font-size: 20px;
-            animation: arrowBounce 1.5s ease-in-out infinite;
-        }
-
-        @keyframes arrowBounce {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(8px); }
-        }
-
-        /* PAGE 2 - INFO PAIEMENT BLOQUÉ */
-        #infoPage {
-            min-height: 100vh;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 15px 30px 15px;
-        }
-
-        #infoPage.active {
-            display: flex;
-        }
-
-        .info-content {
-            max-width: 700px;
-            text-align: center;
-        }
-
-        .info-icon-large {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--red), var(--red-dark));
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 36px;
-            color: white;
-            animation: pulseIcon 2s ease-in-out infinite;
-        }
-
-        @keyframes pulseIcon {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 65, 53, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(239, 65, 53, 0); }
-        }
-
-        .info-content h1 {
-            font-size: clamp(24px, 6vw, 36px);
-            font-weight: 900;
-            margin-bottom: 15px;
-            line-height: 1.2;
-        }
-
-        .info-content h1 .highlight-green { color: var(--green-light); }
-        .info-content h1 .highlight-red { color: var(--red); }
-
-        .info-description {
-            font-size: 15px;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .info-cards {
-            display: grid;
-            gap: 15px;
-            margin: 25px 0;
-            text-align: left;
-        }
-
-        .info-card {
-            padding: 18px;
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        .info-card-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .info-card-icon.green { background: var(--green); }
-        .info-card-icon.red { background: var(--red); }
-
-        .info-card-text h3 {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .info-card-text p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .btn-order {
-            margin-top: 20px;
-            padding: 16px 40px;
-            font-size: 18px;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--green), var(--green-light));
-            color: white;
-            border: none;
-            border-radius: 16px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 10px 40px rgba(0, 151, 57, 0.4);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        /* ASSISTANCE BUTTON */
+        .assist-btn {
+            position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%;
+            background: var(--jiji-green); color: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            box-shadow: 0 8px 24px rgba(0,166,80,0.4); transition: all 0.3s; z-index: 900;
             animation: pulse 2s ease-in-out infinite;
         }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        .assist-btn:hover { transform: scale(1.1); box-shadow: 0 12px 32px rgba(0,166,80,0.5); }
 
-        .btn-order:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 50px rgba(0, 151, 57, 0.6);
-        }
-
-        /* PAGE 3 - COMMANDE */
-        #orderPage {
-            padding: 80px 15px 30px 15px;
-            min-height: 100vh;
-        }
-
-        .order-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .order-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .order-header h1 {
-            font-size: 26px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .order-header p {
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-
-        .order-card {
-            padding: 25px 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 18px;
-            border-radius: 14px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            font-size: 15px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s;
-            outline: none;
-        }
-
-        .form-input:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--green);
-            box-shadow: 0 0 0 4px rgba(0, 151, 57, 0.15);
-        }
-
-        .form-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .seller-badge {
-            position: absolute;
-            right: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 32px;
-            height: 32px;
-            background: #3b82f6;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 14px;
-            animation: badgeAppear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-        }
-
-        .seller-badge.visible {
-            display: flex;
-        }
-
-        @keyframes badgeAppear {
-            0% { transform: translateY(-50%) scale(0); }
-            50% { transform: translateY(-50%) scale(1.3); }
-            100% { transform: translateY(-50%) scale(1); }
-        }
-
-        .badge-status-text {
-            font-size: 12px;
-            margin-top: 6px;
-            display: none;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-        }
-
-        .badge-status-text.visible {
-            display: flex;
-        }
-
-        .badge-status-text.verified {
-            color: var(--green-light);
-        }
-
-        .price-display {
-            font-size: 36px;
-            font-weight: 900;
-            text-align: center;
-            color: var(--green-light);
-            margin: 15px 0;
-        }
-
-        .btn {
-            padding: 14px 24px;
-            border-radius: 14px;
-            border: none;
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            text-decoration: none;
-        }
-
-        .btn-wave {
-            background: linear-gradient(135deg, var(--green), var(--green-light));
-            color: white;
-            width: 100%;
-            justify-content: center;
-            padding: 16px;
-            font-size: 16px;
-            box-shadow: 0 10px 30px rgba(0, 151, 57, 0.3);
-        }
-
-        .btn-wave:hover {
-            box-shadow: 0 15px 40px rgba(0, 151, 57, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .btn-cancel {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--white);
-            border: 1px solid var(--red);
-            width: 100%;
-            justify-content: center;
-            margin-top: 12px;
-        }
-
-        .btn-cancel:hover {
-            background: var(--red);
-            color: var(--white);
-        }
-
-        .btn-contact {
-            background: var(--white);
-            color: var(--green);
-            width: 100%;
-            justify-content: center;
-            margin-top: 12px;
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-contact:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.25);
-        }
-
-        .security-notice-small {
-            background: rgba(239, 65, 53, 0.1);
-            border: 1px solid rgba(239, 65, 53, 0.3);
-            border-radius: 12px;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            text-align: left;
-        }
-
-        .security-notice-small i {
-            color: var(--red);
-            font-size: 16px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .security-notice-small p {
-            color: var(--text-secondary);
-            font-size: 12px;
-            line-height: 1.4;
-            margin: 0;
-        }
-
-        /* Navigation */
-        .nav-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            padding: 12px 15px;
-            background: rgba(15, 26, 15, 0.9);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            display: none;
-        }
-
-        .nav-container.visible {
-            display: block;
-        }
-
-        .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            display: flex;
-            align-items: center;
-            gap: 2px;
-        }
-
-        .logo .l-green { color: var(--green-light); }
-        .logo .l-white { color: var(--white); }
-        .logo .l-red { color: var(--red); }
-
-        .nav-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .icon-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            font-size: 16px;
-        }
-
-        .icon-btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--green);
-            background: rgba(0, 151, 57, 0.1);
-        }
-
-        /* Assistance */
-        .assist-btn {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--red), var(--red-dark));
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 10px 30px rgba(239, 65, 53, 0.4);
-            transition: all 0.3s;
-            z-index: 999;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .assist-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 15px 40px rgba(239, 65, 53, 0.5);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--bg-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .modal-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--red), var(--red-dark));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 32px;
-        }
-
-        .modal h2 {
-            font-size: 22px;
-            margin-bottom: 12px;
-            color: var(--white);
-        }
-
-        .modal p {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .modal-phone {
-            font-size: 22px;
-            font-weight: 800;
-            color: var(--red);
-            margin-bottom: 20px;
-            display: block;
-            text-decoration: none;
-        }
-
-        .modal-close {
-            padding: 12px 28px;
-            background: var(--green);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            cursor: pointer;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .modal-close:hover {
-            background: var(--green-light);
-        }
-
-        @media (max-width: 768px) {
-            .security-notice, .info-card {
-                flex-direction: column;
-                text-align: center;
-                align-items: center;
-            }
-            .order-card {
-                padding: 20px 15px;
-            }
-        }
+        .assist-modal-content { text-align: center; }
+        .assist-icon { width: 70px; height: 70px; background: var(--jiji-green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 32px; color: var(--jiji-green); }
+        .assist-phone { font-size: 24px; font-weight: 800; color: var(--jiji-green); margin: 16px 0; display: block; text-decoration: none; }
+        .assist-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+        .assist-actions .btn { margin-top: 0; padding: 14px; font-size: 14px; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn-call { background: var(--jiji-green); color: white; }
     </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
 
-    <!-- PAGE 1 - LANDING -->
+    <!-- SPLASH -->
+    <div id="splash">
+        <div class="splash-logo">
+            <span>j</span><span>i</span><span>j</span><span>i</span>
+        </div>
+        <div class="splash-tagline">Zainz jiji</div>
+        <div class="splash-loader"></div>
+    </div>
+
+    <!-- PAGE 1 : LANDING -->
     <div id="landingPage" class="page active">
-        <div class="landing-content">
-            <div class="typing-container">
-                <div class="typing-text">
-                    <span id="typedText"></span><span class="cursor"></span>
+        <div class="landing">
+            <div class="landing-content">
+                <div class="landing-logo">
+                    <span>j</span><span>i</span><span>j</span><span>i</span>
                 </div>
-            </div>
-
-            <div class="trust-badge">
-                <i class="fas fa-shield-alt"></i>
-                <span>Vendeur Officiel 100% Vérifié</span>
-            </div>
-
-            <p class="landing-description">
-                Tous nos vendeurs sont rigoureusement sélectionnés et certifiés. 
-                Vous pouvez leur faire confiance en toute sécurité pour passer vos commandes.
-            </p>
-
-            <div class="security-notice">
-                <i class="fas fa-exclamation-triangle main-icon"></i>
-                <div class="security-notice-content">
-                    <h4><i class="fas fa-lock"></i> commande sécurisé</h4>
-                    <p>
-                         <strong></strong>
-                         <strong></strong>.
-                    </p>
-                </div>
-            </div>
-
-            <div class="features">
-                <div class="feature-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>commande Sécurisé</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Livraison Rapide</span>
-                </div>
-                <div class="feature-item">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Support 24/7</span>
-                </div>
-            </div>
-
-            <button class="btn-start" onclick="showPage('infoPage')">
-                <span>Commencer</span>
-                <i class="fas fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- PAGE 2 - INFO PAIEMENT BLOQUÉ -->
-    <div id="infoPage" class="page">
-        <div class="info-content">
-            <div class="info-icon-large">
-                <i class="fas fa-lock"></i>
-            </div>
-
-            <h1>
-                votre commande est<span class="highlight-red">Sécurisé</span><br>
-                par <span class="highlight-green">notre entreprise</span>
-            </h1>
-
-            <p class="info-description">
-                Pour votre sécurité, chaque commande est automatiquement bloqué par notre entreprise jiji. 
-            
-            </p>
-
-            <div class="info-cards">
-                <div class="info-card glass-card">
-                    <div class="info-card-icon red">
-                        <i class="fas fa-ban"></i>
+                <h1>Le N°1 en Côte d'Ivoire 🇨🇮</h1>
+                <p>passé vous commande en toute sécurité</p>
+                
+                <div class="landing-features">
+                    <div class="landing-feat">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Paiement sécurisé</span>
                     </div>
-                    <div class="info-card-text">
-                        <h3>Commande cline</h3>
-                        <p><strong></strong> <strong></strong></p>
-                    </div>
-                </div>
-
-                <div class="info-card glass-card">
-                    <div class="info-card-icon green">
+                    <div class="landing-feat">
                         <i class="fas fa-truck"></i>
+                        <span>Livraison rapide</span>
                     </div>
-                    <div class="info-card-text">
-                        <h3></h3>
-                        <p></p> <strong></strong></p>
+                    <div class="landing-feat">
+                        <i class="fas fa-headset"></i>
+                        <span>Support 24/7</span>
                     </div>
                 </div>
-            </div>
 
-            <button class="btn-order" onclick="showPage('orderPage')">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Passer la commande</span>
-            </button>
+                <button class="btn-landing" onclick="showPage('orderPage')">
+                    Passer une commande <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- PAGE 3 - COMMANDE -->
+    <!-- PAGE 2 : COMMANDE -->
     <div id="orderPage" class="page">
-        <div class="order-container">
-            <div class="order-header">
-                <h1>Passer une commande</h1>
-                <p>Entrez les informations de votre commande</p>
-            </div>
+        <div class="header">
+            <div class="brand"><span>j</span><span>i</span><span>j</span><span>i</span></div>
+            <div class="secure-badge"><i class="fas fa-lock"></i> Paiement sécurisé</div>
+        </div>
 
-            <div class="order-card glass-card">
-                <div class="security-notice-small">
-                    <i class="fas fa-lock"></i>
-                    <p>
-                        passé la commande<strong>Pour payé à la livraison</strong>. L'argent est remis <strong>seulement si un livreur est envoyé</strong>.
-                    </p>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Nom du vendeur</label>
-                    <div class="form-input-wrapper">
-                        <input type="text" class="form-input" id="sellerName" placeholder="Tapez le nom du vendeur..." oninput="checkSellerBadge()">
-                        <div class="seller-badge" id="sellerBadge">
-                            <i class="fas fa-check"></i>
+        <div class="container">
+            <div class="card">
+                <div class="card-title"><i class="fas fa-file-invoice"></i> Détails de la commande</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Nom de l'article</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-tag"></i>
+                            <input type="text" class="form-input" id="itemName" placeholder="Ex: iPhone 14 Pro Max" oninput="updateSummary()">
                         </div>
                     </div>
-                    <div class="badge-status-text" id="badgeStatusText">
-                        <i class="fas fa-check-circle"></i>
-                        <span id="badgeStatusMessage"></span>
+                    <div class="form-group">
+                        <label>Nom du vendeur</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-user"></i>
+                            <input type="text" class="form-input" id="sellerName" placeholder="Ex: Boutique Officielle" oninput="updateSummary()">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Localisation</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" class="form-input" id="location" placeholder="Ex: Abidjan, Cocody" oninput="updateSummary()">
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>Prix (FCFA)</label>
+                        <div class="input-wrap">
+                            <i class="fas fa-coins"></i>
+                            <input type="number" class="form-input" id="price" placeholder="Ex: 50000" oninput="updateSummary()">
+                        </div>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="form-label">Prix (FCFA)</label>
-                    <input type="number" class="form-input" id="itemPrice" placeholder="Ex: 50000" oninput="updatePriceDisplay()">
-                </div>
-
-                <div class="price-display" id="priceDisplay">0 FCFA</div>
-
-                <button class="btn btn-wave" onclick="payWithWave()">
-                    <i class="fas fa-wallet"></i>
-                    Passé la commande 
+                <button class="btn btn-primary" id="btnCommander" disabled onclick="openModal('paymentModal')">
+                    <i class="fas fa-lock"></i> Passer la commande
                 </button>
+            </div>
 
-                <a href="https://wa.me/2250160775890" class="btn btn-cancel" target="_blank">
-                    <i class="fab fa-whatsapp"></i>
-                    Annuler la commande
-                </a>
-
-                <a href="https://wa.me/2250160775890" class="btn btn-contact" target="_blank">
-                    <i class="fas fa-headset"></i>
-                    Contactez-nous
-                </a>
+            <div class="card">
+                <div class="card-title"><i class="fas fa-receipt"></i> Récapitulatif</div>
+                <div class="summary-row">
+                    <span class="summary-label">Article</span>
+                    <span class="summary-value" id="sumItem">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Vendeur</span>
+                    <span class="summary-value" id="sumSeller">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Localisation</span>
+                    <span class="summary-value" id="sumLoc">-</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="sumTotal">0 FCFA</span>
+                </div>
+                <div class="trust-badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Jiji ci.</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="nav-container" id="navContainer">
-        <div class="nav-content">
-            <div class="logo">
-                <span class="l-green">J</span>
-                <span class="l-white">I</span>
-                <span class="l-red">J</span>
-                <span class="l-white">I</span>
-            </div>
-            <div class="nav-actions">
-                <button class="icon-btn" onclick="showAssistance()" title="Assistance">
-                    <i class="fas fa-headset"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ASSISTANCE MODAL -->
-    <div id="assistModal" class="modal" onclick="closeModal(event)">
+    <!-- Modal Choix Paiement -->
+    <div id="paymentModal" class="modal" onclick="closeModal(event, 'paymentModal')">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <div class="modal-icon">
+            <h2 style="margin-bottom: 8px;">Mode de paiement</h2>
+            <p style="color: var(--text-light); margin-bottom: 24px; font-size: 14px;">Veuillez choisir une option pour continuer :</p>
+            
+            <label class="pay-option" onclick="selectPay(this)">
+                <input type="radio" name="payMethod" value="delivery">
+                <div>
+                    <div style="font-weight: 700;">Payer à la livraison</div>
+                    <div style="font-size: 13px; color: var(--text-light);">Le livreur encaisse le montant après la livraison.</div>
+                </div>
+            </label>
+            
+            <label class="pay-option" onclick="selectPay(this)">
+                <input type="radio" name="payMethod" value="after">
+                <div>
+                    <div style="font-weight: 700;">Payer après la livraison</div>
+                    <div style="font-size: 13px; color: var(--text-light);">Paiement direct.</div>
+                </div>
+            </label>
+
+            <button class="btn btn-primary" id="btnConfirmPay" disabled onclick="goToWave()">
+                passé la commande 
+            </button>
+            <button class="btn btn-secondary" onclick="closeModalDirect('paymentModal')">Annuler</button>
+        </div>
+    </div>
+
+    <!-- Modal Wave -->
+    <div id="waveModal" class="modal" onclick="closeModal(event, 'waveModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: var(--jiji-green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-check" style="font-size: 28px; color: var(--jiji-green);"></i>
+                </div>
+                <h2 style="margin-top: 16px;">Commande enregistrée !</h2>
+            </div>
+            
+            <div class="wave-box">
+                Veuillez Payer Payment*touch Jiji & Yango avec Wave en cliquant sur ce lien :<br><br>
+                <a href="https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/" target="_blank">https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/</a><br><br>
+                <strong>Ajoutez cet expéditeur à vos contacts pour rendre le lien cliquable.</strong>
+            </div>
+
+            <a href="https://pay.wave.com/m/M_ci_nJkLYVQxhQjb/c/ci/" target="_blank" class="btn btn-primary">
+                <i class="fas fa-external-link-alt"></i> Ouvrir le lien Wave
+            </a>
+            <button class="btn btn-secondary" onclick="showCancelModal()">J'ai payé, continuer</button>
+        </div>
+    </div>
+
+    <!-- Modal Annulation -->
+    <div id="cancelModal" class="modal" onclick="closeModal(event, 'cancelModal')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 60px; height: 60px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 28px; color: #f59e0b;"></i>
+                </div>
+                <h2 style="margin-top: 16px;">Besoin d'aide ?</h2>
+                <p style="color: var(--text-light); margin-top: 8px; font-size: 14px;">Vous pouvez annuler votre commande ou nous contacter pour assistance.</p>
+            </div>
+
+            <a href="https://wa.me/2250160775890?text=Bonjour,%20je%20souhaite%20annuler%20ma%20commande" target="_blank" class="btn" style="background: #ef4444; color: white; margin-top: 16px;">
+                <i class="fas fa-times-circle"></i> Annuler la commande
+            </a>
+            
+            <a href="https://wa.me/2250160775890" target="_blank" class="btn btn-secondary">
+                <i class="fab fa-whatsapp"></i> Contacter le support
+            </a>
+            
+            <button class="btn btn-secondary" onclick="closeModalDirect('cancelModal')">Retour</button>
+        </div>
+    </div>
+
+    <!-- Modal Assistance -->
+    <div id="assistModal" class="modal" onclick="closeModal(event, 'assistModal')">
+        <div class="modal-content assist-modal-content" onclick="event.stopPropagation()">
+            <div class="assist-icon">
                 <i class="fas fa-headset"></i>
             </div>
             <h2>Besoin d'aide ?</h2>
-            <p>Notre équipe est disponible 24/7 pour vous assister</p>
-            <a href="tel:+2250160775890" class="modal-phone">+225 01 60 77 58 90</a>
-            <button class="modal-close" onclick="closeAssistModal()">Fermer</button>
+            <p style="color: var(--text-light); margin-top: 8px;">Notre équipe est disponible 24/7</p>
+            <a href="tel:+2250160775890" class="assist-phone">+225 01 60 77 58 90</a>
+            
+            <div class="assist-actions">
+                <a href="tel:+2250160775890" class="btn btn-call">
+                    <i class="fas fa-phone"></i> Appeler
+                </a>
+                <a href="https://wa.me/2250160775890" target="_blank" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="closeModalDirect('assistModal')" style="margin-top: 16px;">Fermer</button>
         </div>
     </div>
 
-    <!-- FLOATING ASSISTANCE BUTTON -->
-    <button class="assist-btn" onclick="showAssistance()" title="Assistance" style="display: none;" id="assistBtn">
-        <i class="fas fa-phone-alt"></i>
+    <!-- Bouton Assistance Flottant -->
+    <button class="assist-btn" onclick="openModal('assistModal')" title="Assistance">
+        <i class="fas fa-headset"></i>
     </button>
 
     <script>
-        // Typing Effect
-        const textToType = "Bienvenue sur Jiji côte d'ivoire 🇨🇮";
-        const typedTextElement = document.getElementById('typedText');
-        let charIndex = 0;
-
-        function typeText() {
-            if (charIndex < textToType.length) {
-                typedTextElement.textContent += textToType.charAt(charIndex);
-                charIndex++;
-                setTimeout(typeText, 100);
-            } else {
-                setTimeout(() => {
-                    typedTextElement.textContent = '';
-                    charIndex = 0;
-                    typeText();
-                }, 3000);
-            }
-        }
-
+        // SPLASH
         window.addEventListener('load', () => {
-            setTimeout(typeText, 500);
+            setTimeout(() => {
+                document.getElementById('splash').classList.add('hide');
+            }, 2500);
         });
 
-        // Wave link
-        const WAVE_LINK = "https://pay.wave.com/m/M_ci_QkksyFUDBqsl/c/ci/";
-
-        // Liste des vendeurs officiels vérifiés (uniquement "jiji")
-        const OFFICIAL_SELLERS = ["jiji"];
-
-        // Check seller badge
-        function checkSellerBadge() {
-            const name = document.getElementById('sellerName').value.trim();
-            const badge = document.getElementById('sellerBadge');
-            const statusText = document.getElementById('badgeStatusText');
-            const statusMessage = document.getElementById('badgeStatusMessage');
-
-            if (name.length === 0) {
-                badge.classList.remove('visible');
-                statusText.classList.remove('visible');
-                return;
-            }
-
-            // Normaliser le nom (minuscules et supprimer les espaces multiples)
-            const normalizedName = name.toLowerCase().replace(/\s+/g, ' ').trim();
-            
-            if (normalizedName === "jiji") {
-                // Vendeur officiel - afficher le badge bleu
-                badge.classList.add('visible');
-                statusText.classList.add('visible');
-                statusText.classList.remove('unverified');
-                statusText.classList.add('verified');
-                statusMessage.textContent = '✓ Vendeur officiel jiji vérifié';
-            } else {
-                // Pour tout autre nom : aucun signalement, rien n'apparaît (comportement normal)
-                badge.classList.remove('visible');
-                statusText.classList.remove('visible');
-            }
-        }
-
-        // Update price display
-        function updatePriceDisplay() {
-            const price = document.getElementById('itemPrice').value;
-            const display = document.getElementById('priceDisplay');
-            display.textContent = price ? `${parseInt(price).toLocaleString()} FCFA` : '0 FCFA';
-        }
-
-        // Pay with Wave
-        function payWithWave() {
-            const sellerName = document.getElementById('sellerName').value.trim();
-            const price = document.getElementById('itemPrice').value.trim();
-
-            if (!sellerName) {
-                alert('Veuillez entrer le nom du vendeur');
-                return;
-            }
-
-            if (!price) {
-                alert('Veuillez entrer le prix');
-                return;
-            }
-
-            const waveUrl = `${WAVE_LINK}?amount=${price}`;
-            window.open(waveUrl, '_blank');
-        }
-
-        // Show page
-        function showPage(pageName) {
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageName).classList.add('active');
-
-            if (pageName === 'landingPage') {
-                document.getElementById('navContainer').classList.remove('visible');
-                document.getElementById('assistBtn').style.display = 'none';
-            } else {
-                document.getElementById('navContainer').classList.add('visible');
-                document.getElementById('assistBtn').style.display = 'flex';
-            }
-
+        // NAVIGATION
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
             window.scrollTo(0, 0);
         }
 
-        // Assistance
-        function showAssistance() {
-            document.getElementById('assistModal').classList.add('active');
+        // RÉCAP
+        function updateSummary() {
+            const item = document.getElementById('itemName').value || '-';
+            const seller = document.getElementById('sellerName').value || '-';
+            const loc = document.getElementById('location').value || '-';
+            const price = document.getElementById('price').value;
+
+            document.getElementById('sumItem').textContent = item;
+            document.getElementById('sumSeller').textContent = seller;
+            document.getElementById('sumLoc').textContent = loc;
+            document.getElementById('sumTotal').textContent = price ? parseInt(price).toLocaleString() + ' FCFA' : '0 FCFA';
+
+            document.getElementById('btnCommander').disabled = !(item !== '-' && seller !== '-' && loc !== '-' && price);
         }
 
-        function closeAssistModal() {
-            document.getElementById('assistModal').classList.remove('active');
+        // MODALES
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(e, id) { if(e.target === e.currentTarget) document.getElementById(id).classList.remove('active'); }
+        function closeModalDirect(id) { document.getElementById(id).classList.remove('active'); }
+
+        function selectPay(el) {
+            document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            el.querySelector('input').checked = true;
+            document.getElementById('btnConfirmPay').disabled = false;
         }
 
-        function closeModal(event) {
-            if (event.target === event.currentTarget) {
-                event.target.classList.remove('active');
-            }
+        function goToWave() {
+            closeModalDirect('paymentModal');
+            openModal('waveModal');
+        }
+
+        function showCancelModal() {
+            closeModalDirect('waveModal');
+            openModal('cancelModal');
         }
     </script>
 </body>
